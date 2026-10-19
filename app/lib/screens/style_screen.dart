@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../ai/ai_client.dart';
+import '../engine/color_shader.dart';
+import '../engine/image_codec.dart';
 import '../state/providers.dart';
 import 'edit_screen.dart';
 
@@ -38,14 +40,24 @@ class _StyleScreenState extends ConsumerState<StyleScreen> {
     if (refBytes == null || photoBytes == null) return;
     ref.read(analysisLoadingProvider.notifier).state = true;
     try {
+      final refJpeg = await decodeToJpeg(refBytes, maxDimension: 1024);
+      final photoJpeg = await decodeToJpeg(photoBytes, maxDimension: 1024);
       final client = AiClient(baseUrl: const String.fromEnvironment('AI_BASE_URL', defaultValue: 'http://10.0.2.2:8787'));
-      final result = await client.analyze(
-        mode: 'style',
-        imageJpeg: photoBytes,
-        referenceImageJpeg: refBytes,
-      );
+      final result = await client.analyze(mode: 'style', imageJpeg: photoJpeg, referenceImageJpeg: refJpeg);
       ref.read(suggestionProvider.notifier).set(result);
       ref.read(editParamsProvider.notifier).set(result.params);
+
+      final program = await loadColorShader();
+      final shader = ColorShader(program);
+      final image = await bytesToUiImage(photoJpeg);
+      if (!mounted) return;
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => EditScreen(image: image, colorShader: shader, imageJpeg: photoJpeg),
+      ));
+    } on AiClientException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('分析失败，请重试')));
+      }
     } finally {
       ref.read(analysisLoadingProvider.notifier).state = false;
     }
@@ -53,6 +65,7 @@ class _StyleScreenState extends ConsumerState<StyleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loading = ref.watch(analysisLoadingProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('风格迁移')),
       body: Padding(
@@ -61,7 +74,10 @@ class _StyleScreenState extends ConsumerState<StyleScreen> {
           children: [
             ElevatedButton(onPressed: _pickRef, child: const Text('选择风格参考图')),
             ElevatedButton(onPressed: _pickPhoto, child: const Text('选择自己的照片')),
-            ElevatedButton(onPressed: _analyze, child: const Text('分析风格')),
+            if (loading)
+              const CircularProgressIndicator()
+            else
+              ElevatedButton(onPressed: _analyze, child: const Text('分析风格')),
           ],
         ),
       ),

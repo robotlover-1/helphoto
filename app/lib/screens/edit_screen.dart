@@ -62,6 +62,22 @@ class EditScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _export(BuildContext context, WidgetRef ref) async {
+    final img = image;
+    final shader = colorShader;
+    if (img == null || shader == null) return;
+    try {
+      await exportImage(img, shader, ref.read(editParamsProvider));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已导出到相册')));
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('导出失败，请检查相册权限')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final params = ref.watch(editParamsProvider);
@@ -74,7 +90,7 @@ class EditScreen extends ConsumerWidget {
           TextButton(
             onPressed: image == null || colorShader == null
                 ? null
-                : () => exportImage(image!, colorShader!, ref.read(editParamsProvider)),
+                : () => _export(context, ref),
             child: const Text('导出'),
           ),
         ],
