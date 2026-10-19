@@ -22,5 +22,8 @@ Future<void> exportImage(
   final rendered = await picture.toImage(w, h);
   final bytes = await rendered.toByteData(format: ui.ImageByteFormat.png);
   if (bytes == null) throw StateError('render failed');
-  await Gal.putImageBytes(bytes.buffer.asUint8List(), name: 'ai_photo_stylist');
+  await Gal.putImageBytes(
+    bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes),
+    name: 'ai_photo_stylist',
+  );
 }

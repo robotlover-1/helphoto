@@ -32,23 +32,10 @@ class EditScreen extends ConsumerWidget {
     final bytes = imageJpeg;
     if (bytes == null) return;
 
-    final controller = TextEditingController();
     final feedback = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('继续给建议'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(hintText: '哪里不满意？例如：还是太暖'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
-          TextButton(onPressed: () => Navigator.pop(ctx, controller.text), child: const Text('提交')),
-        ],
-      ),
+      builder: (_) => const _RefineDialog(),
     );
-    controller.dispose();
     if (feedback == null || feedback.trim().isEmpty) return;
 
     ref.read(analysisLoadingProvider.notifier).state = true;
@@ -123,6 +110,42 @@ class EditScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _RefineDialog extends StatefulWidget {
+  const _RefineDialog();
+
+  @override
+  State<_RefineDialog> createState() => _RefineDialogState();
+}
+
+class _RefineDialogState extends State<_RefineDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('继续给建议'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: const InputDecoration(hintText: '哪里不满意？例如：还是太暖'),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('取消')),
+        TextButton(
+          onPressed: () => Navigator.pop(context, _controller.text),
+          child: const Text('提交'),
+        ),
+      ],
     );
   }
 }
