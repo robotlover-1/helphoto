@@ -20,12 +20,16 @@ class _StyleScreenState extends ConsumerState<StyleScreen> {
 
   Future<void> _pickRef() async {
     final f = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1024);
-    if (f != null) setState(() => _refBytes = await f.readAsBytes());
+    if (f == null) return;
+    final bytes = await f.readAsBytes();
+    setState(() => _refBytes = bytes);
   }
 
   Future<void> _pickPhoto() async {
     final f = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1024);
-    if (f != null) setState(() => _photoBytes = await f.readAsBytes());
+    if (f == null) return;
+    final bytes = await f.readAsBytes();
+    setState(() => _photoBytes = bytes);
   }
 
   Future<void> _analyze() async {
