@@ -17,8 +17,8 @@ class AnalysisResult {
       params: rawParams is Map<String, dynamic>
           ? EditParams.fromJson(rawParams)
           : EditParams.zero,
-      explanation: json['explanation'] as String? ?? '',
-      summary: json['summary'] as String? ?? '',
+      explanation: json['explanation'] is String ? json['explanation'] as String : '',
+      summary: json['summary'] is String ? json['summary'] as String : '',
     );
   }
 }

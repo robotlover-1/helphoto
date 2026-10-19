@@ -38,6 +38,16 @@ void main() {
     expect(r.summary, '清新');
   });
 
+  test('fromJson 非字符串 explanation/summary 回退空串', () {
+    final r = AnalysisResult.fromJson({
+      'params': {},
+      'explanation': 123,
+      'summary': ['x'],
+    });
+    expect(r.explanation, '');
+    expect(r.summary, '');
+  });
+
   test('analyze 网络错误抛 AiClientException', () async {
     final mock = MockClient((_) async => throw Exception('boom'));
     final client = AiClient(client: mock, baseUrl: 'http://x');
