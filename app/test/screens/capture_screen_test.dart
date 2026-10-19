@@ -13,4 +13,14 @@ void main() {
     expect(find.text('获取建议'), findsOneWidget);
     expect(find.byType(TextField), findsOneWidget);
   });
+
+  testWidgets('CaptureScreen 显示拍照按钮', (tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(home: CaptureScreen()),
+      ),
+    );
+    expect(find.text('拍照'), findsOneWidget);
+    expect(find.text('选择照片'), findsOneWidget);
+  });
 }

@@ -6,6 +6,7 @@ import '../ai/ai_client.dart';
 import '../engine/color_shader.dart';
 import '../engine/image_codec.dart';
 import '../state/providers.dart';
+import 'camera_screen.dart';
 import 'edit_screen.dart';
 import 'style_screen.dart';
 
@@ -25,6 +26,15 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
   void dispose() {
     _intentController.dispose();
     super.dispose();
+  }
+
+  Future<void> _capture() async {
+    final bytes = await Navigator.of(context).push<Uint8List>(
+      MaterialPageRoute(builder: (_) => const CameraScreen()),
+    );
+    if (bytes != null && mounted) {
+      setState(() => _imageBytes = bytes);
+    }
   }
 
   Future<void> _pick() async {
@@ -78,7 +88,13 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            ElevatedButton(onPressed: _pick, child: const Text('选择照片')),
+            Row(
+              children: [
+                Expanded(child: ElevatedButton(onPressed: _capture, child: const Text('拍照'))),
+                const SizedBox(width: 8),
+                Expanded(child: ElevatedButton(onPressed: _pick, child: const Text('选择照片'))),
+              ],
+            ),
             if (_imageBytes != null) const Text('已选择照片'),
             TextField(
               controller: _intentController,
