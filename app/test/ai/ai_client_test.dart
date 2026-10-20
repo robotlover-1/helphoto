@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:ai_photo_stylist/ai/ai_client.dart';
 import 'package:ai_photo_stylist/ai/analysis_result.dart';
-import 'package:ai_photo_stylist/models/edit_params.dart';
 
 void main() {
   test('analyze 解析响应为 AnalysisResult', () async {
@@ -55,5 +54,11 @@ void main() {
       () => client.analyze(mode: 'intent', imageJpeg: Uint8List(0)),
       throwsA(isA<AiClientException>()),
     );
+  });
+
+  test('401 映射为密钥/额度提示', () {
+    expect(AiClient.friendlyMessage(401, 'invalid key'), contains('密钥'));
+    expect(AiClient.friendlyMessage(429), contains('频繁'));
+    expect(AiClient.friendlyMessage(502), contains('稍后'));
   });
 }

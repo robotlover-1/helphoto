@@ -1,13 +1,23 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image/image.dart' as img;
 import 'package:ai_photo_stylist/ai/analysis_result.dart';
 import 'package:ai_photo_stylist/models/edit_params.dart';
 import 'package:ai_photo_stylist/state/providers.dart';
 import 'package:ai_photo_stylist/widgets/param_slider.dart';
+import 'package:ai_photo_stylist/widgets/selected_photo_card.dart';
 import 'package:ai_photo_stylist/widgets/suggestion_card.dart';
 
 Widget wrap(Widget child) => ProviderScope(child: MaterialApp(home: Scaffold(body: child)));
+
+Uint8List _testPng() {
+  final im = img.Image(width: 4, height: 4);
+  img.fill(im, color: img.ColorRgb8(30, 120, 200));
+  return Uint8List.fromList(img.encodePng(im));
+}
 
 void main() {
   testWidgets('ParamSlider 显示 label 与当前值', (tester) async {
@@ -45,6 +55,33 @@ void main() {
     );
     expect(find.text('清新'), findsOneWidget);
     expect(find.text('提亮一点'), findsOneWidget);
+  });
+
+  testWidgets('SelectedPhotoCard 显示蓝色勾与更换/移除', (tester) async {
+    var replaced = false;
+    var removed = false;
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SelectedPhotoCard(
+          bytes: _testPng(),
+          sourceLabel: '相册',
+          onReplace: () => replaced = true,
+          onRemove: () => removed = true,
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.check), findsOneWidget);
+    expect(find.text('相册'), findsWidgets);
+    expect(find.text('更换'), findsOneWidget);
+    expect(find.text('移除'), findsOneWidget);
+
+    await tester.tap(find.text('更换'));
+    await tester.tap(find.text('移除'));
+    expect(replaced, isTrue);
+    expect(removed, isTrue);
   });
 }
 

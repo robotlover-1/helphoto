@@ -23,4 +23,18 @@ void main() {
     expect(find.text('拍照'), findsOneWidget);
     expect(find.text('选择照片'), findsOneWidget);
   });
+
+  testWidgets('点拍照弹出系统相机与应用内相机选项', (tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(home: CaptureScreen()),
+      ),
+    );
+    await tester.tap(find.text('拍照'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('系统相机（推荐）'), findsOneWidget);
+    expect(find.text('应用内相机'), findsOneWidget);
+    expect(find.text('从相册选择'), findsOneWidget);
+  });
 }

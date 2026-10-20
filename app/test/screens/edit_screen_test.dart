@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ai_photo_stylist/models/edit_params.dart';
 import 'package:ai_photo_stylist/screens/edit_screen.dart';
 import 'package:ai_photo_stylist/state/providers.dart';
 
@@ -33,5 +32,23 @@ void main() {
       tester.element(find.byType(EditScreen)),
     );
     expect(container.read(editParamsProvider).exposure, isNot(0));
+  });
+
+  testWidgets('无图片时不显示对比按钮，且布局无溢出', (tester) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(home: EditScreen(image: null, colorShader: null)),
+      ),
+    );
+
+    expect(find.text('按住对比'), findsNothing);
+    expect(find.text('曝光'), findsOneWidget);
+    expect(find.text('阴影'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
