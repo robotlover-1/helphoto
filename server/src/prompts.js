@@ -27,7 +27,7 @@ const PARAM_SCHEMA = {
   required: ['params', 'explanation', 'summary'],
 };
 
-function buildSystemPrompt() {
+function buildSystemPrompt({ useTool = true } = {}) {
   const lines = [
     '你是一名专业摄影后期指导，面向摄影小白，建议要用通俗语言。',
     '你会收到一张照片（可能还有一张风格参考图或用户反馈）。',
@@ -35,7 +35,9 @@ function buildSystemPrompt() {
     ...PARAM_NAMES.map((n) => `- ${n}: ${PARAM_MEANINGS[n]}`),
     'explanation 用通俗语言解释为什么这么调、每个关键参数动了什么（2-4 句）。',
     'summary 用一句话概括本次调整思路。',
-    '务必通过 suggest_params 工具返回结果，不要输出其他文本。',
+    useTool
+      ? '务必通过 suggest_params 工具返回结果，不要输出其他文本。'
+      : '只输出一个 JSON 对象，形如 {"params": {...8 个整数...}, "explanation": "...", "summary": "..."}，不要输出任何其他文本。',
   ];
   return lines.join('\n');
 }

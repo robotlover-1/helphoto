@@ -1,10 +1,19 @@
 const http = require('node:http');
 const { callClaude } = require('./claude.js');
+const { callDeepSeek } = require('./deepseek.js');
 const { validateAnalysis } = require('./schema.js');
 
 const MODES = new Set(['intent', 'style', 'refine']);
 
-async function processAnalyze(body, claudeFn = callClaude) {
+/// AI_PROVIDER=deepseek|anthropic；未设置时优先用已配置 key 的 provider。
+function resolveProvider() {
+  const provider = (process.env.AI_PROVIDER || '').trim().toLowerCase();
+  if (provider === 'deepseek') return callDeepSeek;
+  if (provider === 'anthropic' || provider === 'claude') return callClaude;
+  return process.env.DEEPSEEK_API_KEY ? callDeepSeek : callClaude;
+}
+
+async function processAnalyze(body, providerFn = resolveProvider()) {
   if (!body || !MODES.has(body.mode)) {
     return { status: 400, body: { error: 'invalid mode' } };
   }
@@ -12,7 +21,7 @@ async function processAnalyze(body, claudeFn = callClaude) {
     return { status: 400, body: { error: 'image required' } };
   }
   try {
-    const input = await claudeFn({
+    const input = await providerFn({
       imageBase64: body.image,
       imageMediaType: body.imageMediaType,
       referenceImageBase64: body.referenceImage,
@@ -24,7 +33,11 @@ async function processAnalyze(body, claudeFn = callClaude) {
     const validated = validateAnalysis(input);
     return { status: 200, body: validated };
   } catch (e) {
-    return { status: 502, body: { error: `analysis failed: ${e.message}` } };
+    console.error(`[analyze] ${e?.name || 'Error'}: ${e?.message || e}`);
+    // 上游鉴权/限流错误原样透传，便于 App 给出针对性提示；其余按网关错误处理。
+    const upstream = e && Number.isInteger(e.status) ? e.status : null;
+    const status = upstream === 401 || upstream === 403 || upstream === 429 ? upstream : 502;
+    return { status, body: { error: `analysis failed: ${e.message}` } };
   }
 }
 
@@ -54,9 +67,12 @@ function createServer() {
 
 if (require.main === module) {
   const port = process.env.PORT || 8787;
+  const provider =
+    (process.env.AI_PROVIDER || '').trim().toLowerCase() ||
+    (process.env.DEEPSEEK_API_KEY ? 'deepseek' : 'anthropic');
   createServer().listen(port, () => {
-    console.log(`server listening on :${port}`);
+    console.log(`server listening on :${port} (provider: ${provider})`);
   });
 }
 
-module.exports = { processAnalyze, createServer };
+module.exports = { processAnalyze, createServer, resolveProvider };

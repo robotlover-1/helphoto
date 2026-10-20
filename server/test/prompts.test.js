@@ -41,3 +41,9 @@ test('PARAM_SCHEMA 定义 8 个 int 参数', () => {
   assert.strictEqual(props.params.properties.exposure.minimum, -100);
   assert.strictEqual(props.params.properties.exposure.maximum, 100);
 });
+
+test('useTool=false 时要求只输出 JSON', () => {
+  const s = buildSystemPrompt({ useTool: false });
+  assert.ok(s.includes('JSON'));
+  assert.ok(!s.includes('suggest_params'));
+});

@@ -2,6 +2,14 @@ const { PARAM_SCHEMA, buildSystemPrompt, buildUserContent } = require('./prompts
 
 const MODEL = 'claude-sonnet-5';
 
+class ClaudeApiError extends Error {
+  constructor(status, message) {
+    super(message);
+    this.name = 'ClaudeApiError';
+    this.status = status;
+  }
+}
+
 function imageBlock(base64, mediaType) {
   return { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } };
 }
@@ -41,7 +49,7 @@ async function callClaude({
   });
 
   if (!resp.ok) {
-    throw new Error(`claude api error ${resp.status}: ${await resp.text()}`);
+    throw new ClaudeApiError(resp.status, `claude api error ${resp.status}: ${await resp.text()}`);
   }
   const data = await resp.json();
   const toolUse = (data.content || []).find((b) => b.type === 'tool_use');
@@ -49,4 +57,4 @@ async function callClaude({
   return toolUse.input;
 }
 
-module.exports = { callClaude };
+module.exports = { callClaude, ClaudeApiError };
