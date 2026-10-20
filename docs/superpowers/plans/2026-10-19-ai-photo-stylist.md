@@ -1,6 +1,9 @@
 # AI 摄影指导 App 实现计划
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> 进度（2026-10-20）：Task 1–13 的代码步骤已完成，自动化测试通过；两个标注 Manual 的真机步骤仍待验证。计划外的拍照页（`camera_screen.dart`）也已实现。
+>
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 构建一款 Flutter 移动 App：拍照/选图后输入想法（或导入风格参考图），调用 Claude 视觉模型分析并返回 8 个调色参数与通俗解释，预设到 App 内滑块供用户微调后导出。
 
@@ -33,7 +36,7 @@
 - Consumes: 无（全新项目）
 - Produces: 项目骨架与目录约定，供所有后续任务引用路径。
 
-- [ ] **Step 1: 生成 Flutter 项目**
+- [x] **Step 1: 生成 Flutter 项目**
 
 Run:
 ```bash
@@ -42,7 +45,7 @@ flutter create --project-name ai_photo_stylist --org com.example --platforms=and
 ```
 Expected: 输出 `All done!`，`app/` 下生成完整工程。
 
-- [ ] **Step 2: 精简 pubspec 并加依赖**
+- [x] **Step 2: 精简 pubspec 并加依赖**
 
 修改 `app/pubspec.yaml`，在 `dependencies:` 下追加（保留 flutter 自身）：
 
@@ -64,7 +67,7 @@ flutter:
     - assets/shaders/color.frag
 ```
 
-- [ ] **Step 3: 安装依赖**
+- [x] **Step 3: 安装依赖**
 
 Run:
 ```bash
@@ -73,7 +76,7 @@ flutter pub get
 ```
 Expected: 输出 `Got dependencies!`，无报错。
 
-- [ ] **Step 4: 建后端目录与占位文件**
+- [x] **Step 4: 建后端目录与占位文件**
 
 Run:
 ```bash
@@ -82,7 +85,7 @@ mkdir -p server/src server/test app/assets/shaders
 touch server/src/schema.js server/src/prompts.js server/src/claude.js server/src/server.js
 ```
 
-- [ ] **Step 5: 写 README 骨架**
+- [x] **Step 5: 写 README 骨架**
 
 创建 `README.md`：
 
@@ -97,7 +100,7 @@ Flutter 前端 + Node 后端，拍照后输入想法，AI 给出调色参数建�
 详见 `docs/superpowers/specs/` 与 `docs/superpowers/plans/`。
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -120,7 +123,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "chore:
   - `static const List<String> paramNames`。
   - `static const int minValue = -100; maxValue = 100;`
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 创建 `app/test/models/edit_params_test.dart`：
 
@@ -170,12 +173,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/models/edit_params_test.dart`
 Expected: FAIL（`edit_params.dart` 不存在）
 
-- [ ] **Step 3: 实现模型**
+- [x] **Step 3: 实现模型**
 
 创建 `app/lib/models/edit_params.dart`：
 
@@ -283,12 +286,12 @@ class EditParams {
 }
 ```
 
-- [ ] **Step 4: 运行确认通过**
+- [x] **Step 4: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/models/edit_params_test.dart`
 Expected: PASS（6 tests）
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -308,7 +311,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat: 
 - Consumes: `EditParams`（Task 2）
 - Produces: `Float32List paramsToUniforms(EditParams p)`，返回 8 个 float，顺序固定：`[exposureEV, contrast, temperature, tint, saturation, vibrance, highlights, shadows]`。映射：`exposure = value/50`（EV 范围 -2..2），其余 7 个 = `value/100`（-1..1）。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 创建 `app/test/engine/params_to_uniforms_test.dart`：
 
@@ -355,12 +358,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/engine/params_to_uniforms_test.dart`
 Expected: FAIL
 
-- [ ] **Step 3: 实现**
+- [x] **Step 3: 实现**
 
 创建 `app/lib/engine/params_to_uniforms.dart`：
 
@@ -385,12 +388,12 @@ Float32List paramsToUniforms(EditParams p) {
 }
 ```
 
-- [ ] **Step 4: 运行确认通过**
+- [x] **Step 4: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/engine/params_to_uniforms_test.dart`
 Expected: PASS（4 tests）
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -414,7 +417,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat: 
   - `function validateAnalysis(obj)` → 返回规范化的 `{ params, explanation, summary }`，字段缺失/类型错用默认值兜底；`explanation`/`summary` 非字符串时用 `''`。
   - `function extractJson(text)` → 从可能含 markdown 围栏的文本里抽出 `{...}` 并 `JSON.parse`，失败返回 `null`。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 创建 `server/test/schema.test.js`：
 
@@ -469,12 +472,12 @@ test('extractJson 失败返回 null', () => {
 });
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/server && node --test test/schema.test.js`
 Expected: FAIL（模块不存在）
 
-- [ ] **Step 3: 实现**
+- [x] **Step 3: 实现**
 
 创建 `server/src/schema.js`：
 
@@ -520,12 +523,12 @@ function extractJson(text) {
 module.exports = { PARAM_NAMES, clampParam, validateAnalysis, extractJson };
 ```
 
-- [ ] **Step 4: 运行确认通过**
+- [x] **Step 4: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/server && node --test test/schema.test.js`
 Expected: PASS（7 tests）
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -548,7 +551,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat(s
   - `function buildUserContent({ mode, intent, feedback, currentParams })` → 给 Claude 的文本内容；`mode` 为 `'intent' | 'style' | 'refine'`，非法 mode 抛错。
   - `const PARAM_SCHEMA`（tool input_schema，JSON Schema 对象，8 个参数 `type: integer, minimum: -100, maximum: 100`，explanation/summary 为 string）。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 创建 `server/test/prompts.test.js`：
 
@@ -598,12 +601,12 @@ test('PARAM_SCHEMA 定义 8 个 int 参数', () => {
 });
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/server && node --test test/prompts.test.js`
 Expected: FAIL
 
-- [ ] **Step 3: 实现**
+- [x] **Step 3: 实现**
 
 创建 `server/src/prompts.js`：
 
@@ -666,12 +669,12 @@ function buildUserContent({ mode, intent, feedback, currentParams }) {
 module.exports = { PARAM_SCHEMA, buildSystemPrompt, buildUserContent };
 ```
 
-- [ ] **Step 4: 运行确认通过**
+- [x] **Step 4: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/server && node --test test/prompts.test.js`
 Expected: PASS（6 tests）
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -695,7 +698,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat(s
   - `async function processAnalyze(body, claudeFn = callClaude)` → 返回 `{ status, body }`，供 server 与测试复用（依赖注入 `claudeFn` 便于 mock）。
   - `server.js` 启动 `http` 服务，路由 `POST /analyze` 调 `processAnalyze`，其余返回 404。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 创建 `server/test/server.test.js`：
 
@@ -734,12 +737,12 @@ test('processAnalyze 缺 image 返回 400', async () => {
 });
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/server && node --test test/server.test.js`
 Expected: FAIL
 
-- [ ] **Step 3: 实现 claude.js**
+- [x] **Step 3: 实现 claude.js**
 
 创建 `server/src/claude.js`：
 
@@ -798,7 +801,7 @@ async function callClaude({
 module.exports = { callClaude };
 ```
 
-- [ ] **Step 4: 实现 server.js**
+- [x] **Step 4: 实现 server.js**
 
 创建 `server/src/server.js`：
 
@@ -867,12 +870,12 @@ if (require.main === module) {
 module.exports = { processAnalyze, createServer };
 ```
 
-- [ ] **Step 5: 运行确认通过**
+- [x] **Step 5: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/server && node --test test/server.test.js`
 Expected: PASS（4 tests）
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -895,7 +898,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat(s
   - `class AnalysisResult { final EditParams params; final String explanation; final String summary; }`，`fromJson`。
   - `class AiClient`，构造传 `http.Client` 与 `baseUrl`；方法 `Future<AnalysisResult> analyze({required String mode, required Uint8List imageJpeg, Uint8List? referenceImageJpeg, String? intent, EditParams? currentParams, String? feedback})`。POST 到 `${baseUrl}/analyze`，body 里 `image` 为 base64。
 
-- [ ] **Step 1: 写失败测试（用 mock http.Client）**
+- [x] **Step 1: 写失败测试（用 mock http.Client）**
 
 创建 `app/test/ai/ai_client_test.dart`：
 
@@ -951,12 +954,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/ai/ai_client_test.dart`
 Expected: FAIL
 
-- [ ] **Step 3: 实现 AnalysisResult**
+- [x] **Step 3: 实现 AnalysisResult**
 
 创建 `app/lib/ai/analysis_result.dart`：
 
@@ -987,7 +990,7 @@ class AnalysisResult {
 }
 ```
 
-- [ ] **Step 4: 实现 AiClient**
+- [x] **Step 4: 实现 AiClient**
 
 创建 `app/lib/ai/ai_client.dart`：
 
@@ -1053,12 +1056,12 @@ class AiClient {
 }
 ```
 
-- [ ] **Step 5: 运行确认通过**
+- [x] **Step 5: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/ai/ai_client_test.dart`
 Expected: PASS（2 tests）
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -1083,7 +1086,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat: 
   - `Future<ui.FragmentProgram> loadColorShader()`（`ui.FragmentProgram.fromAsset('assets/shaders/color.frag')`）。
   - `class ShaderPreview extends StatelessWidget`，输入 `ui.Image image` 与 `EditParams params`，用 CustomPainter 渲染。
 
-- [ ] **Step 1: 写 shader**
+- [x] **Step 1: 写 shader**
 
 创建 `app/assets/shaders/color.frag`：
 
@@ -1142,7 +1145,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: 写测试（索引与常量）**
+- [x] **Step 2: 写测试（索引与常量）**
 
 创建 `app/test/engine/color_shader_test.dart`：
 
@@ -1167,7 +1170,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 3: 实现 color_shader.dart**
+- [x] **Step 3: 实现 color_shader.dart**
 
 创建 `app/lib/engine/color_shader.dart`：
 
@@ -1249,7 +1252,7 @@ class _ShaderPainter extends CustomPainter {
 }
 ```
 
-- [ ] **Step 4: 运行确认通过**
+- [x] **Step 4: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/engine/color_shader_test.dart`
 Expected: PASS（2 tests）
@@ -1258,7 +1261,7 @@ Expected: PASS（2 tests）
 
 在真机 `flutter run` 后加载 `ShaderPreview` 确认无 shader 编译错误。若编译失败，回退方案：Task 8 的 `ColorShader.paint` 改用 `ColorFilter.matrix`（仅前 5 参数）。本步骤不做自动化。
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -1283,7 +1286,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat: 
   - `EditParamsNotifier`：`set(EditParams)`、`updateParam(String name, int value)`、`reset()`。
   - `SuggestionNotifier`：`set(AnalysisResult)`、`clear()`。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 创建 `app/test/state/providers_test.dart`：
 
@@ -1327,12 +1330,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/state/providers_test.dart`
 Expected: FAIL
 
-- [ ] **Step 3: 实现 providers.dart**
+- [x] **Step 3: 实现 providers.dart**
 
 创建 `app/lib/state/providers.dart`：
 
@@ -1373,12 +1376,12 @@ final suggestionProvider =
 final analysisLoadingProvider = StateProvider<bool>((ref) => false);
 ```
 
-- [ ] **Step 4: 运行确认通过**
+- [x] **Step 4: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/state/providers_test.dart`
 Expected: PASS（3 tests）
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -1401,7 +1404,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat: 
   - `class ParamSlider extends ConsumerWidget`，props：`String name`、`String label`、`int value`、`ValueChanged<int> onChanged`。
   - `class SuggestionCard extends ConsumerWidget`，无 props（从 `suggestionProvider` 读）。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 创建 `app/test/widgets/widgets_test.dart`：
 
@@ -1455,12 +1458,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/widgets/widgets_test.dart`
 Expected: FAIL
 
-- [ ] **Step 3: 实现 param_slider.dart**
+- [x] **Step 3: 实现 param_slider.dart**
 
 创建 `app/lib/widgets/param_slider.dart`：
 
@@ -1503,7 +1506,7 @@ class ParamSlider extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 4: 实现 suggestion_card.dart**
+- [x] **Step 4: 实现 suggestion_card.dart**
 
 创建 `app/lib/widgets/suggestion_card.dart`：
 
@@ -1537,12 +1540,12 @@ class SuggestionCard extends ConsumerWidget {
 }
 ```
 
-- [ ] **Step 5: 运行确认通过**
+- [x] **Step 5: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/widgets/widgets_test.dart`
 Expected: PASS（3 tests）
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -1563,7 +1566,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat: 
 - Produces:
   - `class EditScreen extends ConsumerWidget`，props：`ui.Image image`、`ColorShader colorShader`。展示预览、建议卡片、8 个 `ParamSlider`、导出按钮、"继续给建议"按钮。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 创建 `app/test/screens/edit_screen_test.dart`：
 
@@ -1606,12 +1609,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/screens/edit_screen_test.dart`
 Expected: FAIL
 
-- [ ] **Step 3: 实现 edit_screen.dart**
+- [x] **Step 3: 实现 edit_screen.dart**
 
 创建 `app/lib/screens/edit_screen.dart`：
 
@@ -1679,12 +1682,12 @@ class EditScreen extends ConsumerWidget {
 }
 ```
 
-- [ ] **Step 4: 运行确认通过**
+- [x] **Step 4: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/screens/edit_screen_test.dart`
 Expected: PASS（2 tests）
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -1709,7 +1712,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat: 
   - `class StyleScreen extends ConsumerWidget`：选参考图 + 自己的照片 → `analyze(mode: 'style')` → 跳 `EditScreen`。
   - `main.dart`：`ProviderScope` + `MaterialApp` + 首页 `CaptureScreen`。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 创建 `app/test/screens/capture_screen_test.dart`：
 
@@ -1732,12 +1735,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/screens/capture_screen_test.dart`
 Expected: FAIL
 
-- [ ] **Step 3: 实现 capture_screen.dart**
+- [x] **Step 3: 实现 capture_screen.dart**
 
 创建 `app/lib/screens/capture_screen.dart`：
 
@@ -1810,7 +1813,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 }
 ```
 
-- [ ] **Step 4: 实现 style_screen.dart**
+- [x] **Step 4: 实现 style_screen.dart**
 
 创建 `app/lib/screens/style_screen.dart`：
 
@@ -1883,7 +1886,7 @@ class _StyleScreenState extends ConsumerState<StyleScreen> {
 }
 ```
 
-- [ ] **Step 5: 实现 main.dart**
+- [x] **Step 5: 实现 main.dart**
 
 创建 `app/lib/main.dart`（覆盖默认）：
 
@@ -1910,12 +1913,12 @@ class App extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 6: 运行确认通过**
+- [x] **Step 6: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/screens/capture_screen_test.dart`
 Expected: PASS（1 test）
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
@@ -1941,7 +1944,7 @@ git -c user.name="Claude" -c user.email="claude@anthropic.com" commit -m "feat: 
   - `Future<void> exportImage(ui.Image image, ColorShader shader, EditParams params)` → 渲染到 2048px、存相册（`gal`）。
   - EditScreen 的导出按钮与"继续给建议"按钮接入上述函数。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 创建 `app/test/engine/image_codec_test.dart`：
 
@@ -1967,12 +1970,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: 运行确认失败**
+- [x] **Step 2: 运行确认失败**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/engine/image_codec_test.dart`
 Expected: FAIL
 
-- [ ] **Step 3: 实现 image_codec.dart**
+- [x] **Step 3: 实现 image_codec.dart**
 
 创建 `app/lib/engine/image_codec.dart`：
 
@@ -1999,7 +2002,7 @@ Future<ui.Image> bytesToUiImage(Uint8List bytes) async {
 }
 ```
 
-- [ ] **Step 4: 实现 export.dart**
+- [x] **Step 4: 实现 export.dart**
 
 创建 `app/lib/engine/export.dart`：
 
@@ -2032,7 +2035,7 @@ Future<void> exportImage(
 }
 ```
 
-- [ ] **Step 5: 接线 EditScreen（导出 + 继续给建议）**
+- [x] **Step 5: 接线 EditScreen（导出 + 继续给建议）**
 
 修改 `app/lib/screens/edit_screen.dart`：将 `AppBar` actions 里的空导出按钮改为调用 `exportImage`，并新增底部"继续给建议"按钮（弹 `showDialog` 输入反馈，调 `AiClient.analyze(mode: 'refine', currentParams: params, feedback: ...)`，成功后 `editParamsProvider.set(result.params)`、`suggestionProvider.set(result)`）。具体实现：
 
@@ -2056,7 +2059,7 @@ ListTile(
 
 并在文件内新增私有方法 `_showRefineDialog`（弹输入框，提交后走 refine 流程，loading 用 `analysisLoadingProvider`）。
 
-- [ ] **Step 6: 运行确认通过**
+- [x] **Step 6: 运行确认通过**
 
 Run: `cd /home/pp/Desktop/photoapp/app && flutter test test/engine/image_codec_test.dart && flutter test`
 Expected: 全量测试 PASS（无回归）
@@ -2065,7 +2068,7 @@ Expected: 全量测试 PASS（无回归）
 
 真机 `flutter run` 后走完拍照→建议→微调→导出，确认相册出现导出图、与预览一致。
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 cd /home/pp/Desktop/photoapp
